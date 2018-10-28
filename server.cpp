@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <string.h>
+#include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,6 +19,8 @@
 
 #define PORT "8888" // port to listen on
 #define BACKLOG 10
+
+using namespace std;
 
 void sigchld_handler(int s) {
 	// waitpid() might overwrite errno, so we save and restore it
@@ -106,8 +108,14 @@ int main(void) {
 		
 		if (!fork()) { // child process
 			close(sockfd); // child doesn't need listener
-			if (send(new_fd, "hello world\n", 13, 0) == -1) {
+			if (send(new_fd, "hello world\n", 12, 0) == -1) {
 				perror("send");
+			}
+			for (int i = 0; i < 10; i++) {
+				string msg = to_string(i) + "\n";
+				if (send(new_fd, msg.c_str(), strlen(msg.c_str()), 0) == -1) {
+					perror("send");
+				}
 			}
 			close(new_fd);
 			exit(0);
@@ -116,3 +124,4 @@ int main(void) {
 	}
 	return 0;
 }
+
