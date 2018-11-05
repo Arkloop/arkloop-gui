@@ -16,6 +16,8 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <thread>
+#include <chrono>
 
 #define PORT "8888" // port to listen on
 #define BACKLOG 10
@@ -116,6 +118,7 @@ int main(void) {
 				if (send(new_fd, msg.c_str(), strlen(msg.c_str()), 0) == -1) {
 					perror("send");
 				}
+				this_thread::sleep_for(chrono::seconds(1));
 			}
 			close(new_fd);
 			exit(0);
